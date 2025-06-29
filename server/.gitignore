@@ -1,0 +1,20 @@
+# Archivos y carpetas a ignorar en todo el proyecto
+
+# Dependencias de Node
+node_modules/
+
+# Archivos de caché y compilación de Next.js
+.next/
+out/
+
+# Archivos de entorno (¡MUY IMPORTANTE PARA LA SEGURIDAD!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
