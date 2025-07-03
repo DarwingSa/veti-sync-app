@@ -1,4 +1,4 @@
-// server/server.js (VERSIÓN FINAL DE DEPURACIÓN CON ESPÍA)
+// server/server.js
 
 require('dotenv').config();
 const express = require('express');
@@ -14,23 +14,6 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// =================================================================
-// ===================== MIDDLEWARE ESPÍA ==========================
-// Este middleware se ejecutará en CADA petición, después de body-parser
-// pero antes de que llegue a nuestras rutas.
-app.use((req, res, next) => {
-  console.log('---------------------------------');
-  console.log('¡NUEVA PETICIÓN RECIBIDA!');
-  console.log('MÉTODO:', req.method);
-  console.log('URL:', req.originalUrl);
-  console.log('REQ.BODY ANTES DE LAS RUTAS:', req.body);
-  console.log('---------------------------------');
-  next(); // <-- ¡Muy importante! Pasa la petición al siguiente middleware o ruta.
-});
-// =================================================================
-// =================================================================
-
 
 // --- Conexión a la Base de Datos ---
 mongoose.connect(process.env.MONGO_URI)

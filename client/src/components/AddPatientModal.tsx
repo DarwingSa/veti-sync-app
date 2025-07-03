@@ -1,9 +1,9 @@
-// RUTA: src/components/AddPatientModal.tsx
+// RUTA: src/components/AddPatientModal.tsx (CORREGIDO)
 
 'use client';
 
 import * as Dialog from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
+import { X, PlusCircle } from 'lucide-react'; // <-- ERROR CORREGIDO: Faltaba PlusCircle
 import { useState } from 'react';
 
 // Definimos una 'prop' para que el componente padre sepa cuándo se añadió un paciente
@@ -54,10 +54,8 @@ export default function AddPatientModal({ onPatientAdded }: AddPatientModalProps
         throw new Error(errorData.msg || 'Error al crear el paciente');
       }
 
-      // Si todo va bien...
-      onPatientAdded(); // Avisamos al componente padre para que refresque la lista
-      setIsOpen(false); // Cerramos el modal
-      // Reseteamos el formulario
+      onPatientAdded();
+      setIsOpen(false);
       setFormData({ name: '', species: '', breed: '', ownerName: '', ownerPhone: '' });
       
     } catch (err: any) {
@@ -81,7 +79,7 @@ export default function AddPatientModal({ onPatientAdded }: AddPatientModalProps
           <Dialog.Title className="text-xl font-bold mb-4">Añadir Nuevo Paciente</Dialog.Title>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Repetimos este bloque para cada campo del formulario */}
+            {/* Campos del formulario... */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre de la mascota</label>
               <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"/>
@@ -102,7 +100,6 @@ export default function AddPatientModal({ onPatientAdded }: AddPatientModalProps
               <label htmlFor="ownerPhone" className="block text-sm font-medium text-gray-700">Teléfono del propietario</label>
               <input type="text" name="ownerPhone" id="ownerPhone" value={formData.ownerPhone} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"/>
             </div>
-            {/* Fin de los campos del formulario */}
             
             {error && <p className="text-sm text-red-500">{error}</p>}
             

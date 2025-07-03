@@ -1,23 +1,32 @@
-// RUTA: src/app/(app)/pacientes/page.tsx (MODIFICADO)
+// RUTA: src/app/(app)/pacientes/page.tsx (CORREGIDO Y CON TABLA)
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import AddPatientModal from '../../../components/AddPatientModal'; // <-- 1. IMPORTAR
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { PlusCircle } from 'lucide-react';
+import AddPatientModal from '../../../components/AddPatientModal';
 
-// ... (la interfaz Patient y el resto del componente se mantienen igual) ...
+// Interfaz para el objeto paciente
+interface Patient {
+  _id: string;
+  name: string;
+  species: string;
+  ownerName: string;
+  createdAt: string;
+}
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  // 2. CREAR UNA FUNCIÓN PARA RECARGAR LOS PACIENTES
   const fetchPatients = useCallback(async () => {
-    setIsLoading(true); // Mostrar 'cargando' al recargar
+    setIsLoading(true);
     const token = localStorage.getItem('veti-sync-token');
     if (!token) {
-      setError("No autenticado.");
-      setIsLoading(false);
+      router.push('/login');
       return;
     }
     try {
@@ -32,23 +41,63 @@ export default function PatientsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []); // useCallback memoriza la función para que no se recree innecesariamente
+  }, [router]);
 
   useEffect(() => {
     fetchPatients();
-  }, [fetchPatients]); // Se ejecuta una vez al cargar la página
+  }, [fetchPatients]);
 
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold">Pacientes</h1>
-        {/* 3. REEMPLAZAR EL BOTÓN ANTIGUO CON EL MODAL */}
         <AddPatientModal onPatientAdded={fetchPatients} />
       </div>
 
-      {/* ... (el resto del código de la tabla se mantiene exactamente igual) ... */}
-      <div className="bg-white rounded-xl border border-gray-200">
-        {/* ... */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Especie</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Propietario</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Registro</th>
+              <th scope="col" className="relative px-6 py-3">
+                <span className="sr-only">Ver Detalles</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {isLoading && (
+              <tr>
+                <td colSpan={5} className="text-center py-4">Cargando pacientes...</td>
+              </tr>
+            )}
+            {error && (
+              <tr>
+                <td colSpan={5} className="text-center py-4 text-red-500">{error}</td>
+              </tr>
+            )}
+            {!isLoading && !error && patients.length === 0 && (
+              <tr>
+                <td colSpan={5} className="text-center py-4 text-gray-500">No hay pacientes registrados.</td>
+              </tr>
+            )}
+            {!isLoading && !error && patients.map((patient) => (
+              <tr key={patient._id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{patient.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.species}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.ownerName}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(patient.createdAt).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <Link href={`/pacientes/${patient._id}`} className="text-cyan-600 hover:text-cyan-900">
+                    Ver Detalles
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

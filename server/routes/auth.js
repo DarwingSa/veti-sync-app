@@ -1,4 +1,4 @@
-// server/routes/auth.js (CORREGIDO)
+// server/routes/auth.js (CORREGIDO EL CATCH VACÍO)
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -16,7 +16,6 @@ router.post('/register', async (req, res) => {
     await user.save();
     res.status(201).json({ msg: 'Usuario registrado exitosamente' });
   } catch (error) {
-    // ¡AHORA ESTÁ EN EL LUGAR CORRECTO!
     console.error('*** ERROR EN /register ***:', error);
     res.status(500).send('Error en el servidor');
   }
@@ -54,7 +53,7 @@ router.post('/login', async (req, res) => {
       }
     );
   } catch (error) {
-    // Arreglado: mensaje de depuración para login y una sola respuesta.
+    // ----> ¡ERROR CRÍTICO CORREGIDO! <----
     console.error('*** ERROR EN /login ***:', error);
     res.status(500).send('Error en el servidor');
   }
